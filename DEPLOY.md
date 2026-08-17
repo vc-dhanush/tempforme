@@ -47,8 +47,10 @@ https://tempforme.vercel.app
 **Your attendance app is at:**
 
 ```text
-https://tempforme.vercel.app/attendance
+https://tempforme.vercel.app
 ```
+
+The root URL opens the attendance app directly. (Portfolio pages remain at `/about`, `/projects`, etc.)
 
 Bookmark this link and share it with anyone who needs to use the app.
 

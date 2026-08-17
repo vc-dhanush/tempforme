@@ -175,7 +175,8 @@ export function AttendanceApp() {
       );
       if (existing) {
         setSelectedClassId(existing.id);
-        setScreen("add-students");
+        const count = getStudentsForClass(data, existing.id).length;
+        setScreen(count > 0 ? "dashboard" : "add-students");
       }
       return;
     }
