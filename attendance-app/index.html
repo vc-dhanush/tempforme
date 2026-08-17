@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Horizon Attendance · Skyline Public School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --sky-50: #f0f9ff;
+      --sky-100: #e0f2fe;
+      --sky-200: #bae6fd;
+      --sky-300: #7dd3fc;
+      --sky-400: #38bdf8;
+      --sky-500: #0ea5e9;
+      --sky-600: #0284c7;
+      --sky-700: #0369a1;
+      --sky-800: #075985;
+      --ink: #0c4a6e;
+      --muted: #64748b;
+      --ok: #059669;
+      --ok-bg: #d1fae5;
+      --late: #d97706;
+      --late-bg: #fef3c7;
+      --no: #dc2626;
+      --no-bg: #fee2e2;
+      --exc: #7c3aed;
+      --exc-bg: #ede9fe;
+      --card: rgba(255,255,255,.82);
+      --shadow: 0 18px 50px rgba(2, 132, 199, .12);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at -10% -20%, #7dd3fc 0%, transparent 50%),
+        radial-gradient(900px 500px at 110% 0%, #38bdf8 0%, transparent 45%),
+        linear-gradient(180deg, #e0f2fe 0%, #f8fbff 40%, #eef8ff 100%);
+    }
+    .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+    aside {
+      background: linear-gradient(180deg, #0369a1 0%, #0284c7 55%, #0ea5e9 100%);
+      color: #fff;
+      padding: 22px 16px;
+      position: sticky; top: 0; height: 100vh;
+      display: flex; flex-direction: column; gap: 18px;
+    }
+    .brand { display: flex; gap: 12px; align-items: center; padding: 4px 8px 16px; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: #fff; color: var(--sky-600);
+      display: grid; place-items: center; font-weight: 800; font-size: 18px;
+    }
+    .brand h1 { font-size: 16px; line-height: 1.2; }
+    .brand p { font-size: 11px; opacity: .8; font-weight: 500; }
+    nav { display: flex; flex-direction: column; gap: 6px; }
+    nav button {
+      appearance: none; border: 0; background: transparent; color: #e0f2fe;
+      text-align: left; padding: 11px 12px; border-radius: 12px; cursor: pointer;
+      font: inherit; font-weight: 600; font-size: 13.5px;
+    }
+    nav button:hover, nav button.active { background: rgba(255,255,255,.16); color: #fff; }
+    .aside-foot { margin-top: auto; background: rgba(255,255,255,.12); border-radius: 14px; padding: 12px; font-size: 12px; }
+    main { padding: 22px 26px 40px; }
+    .topbar {
+      display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+      margin-bottom: 22px;
+    }
+    .topbar h2 { font-size: 26px; letter-spacing: -.03em; }
+    .topbar .sub { color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+    .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pill {
+      background: var(--card); backdrop-filter: blur(10px);
+      border: 1px solid #bae6fd; border-radius: 999px;
+      padding: 8px 12px; font-size: 12px; font-weight: 600; color: var(--sky-800);
+      box-shadow: var(--shadow);
+    }
+    .grid { display: grid; gap: 16px; }
+    .stats { grid-template-columns: repeat(4, 1fr); }
+    .card {
+      background: var(--card); border: 1px solid #bae6fd;
+      border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .stat .k { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+    .stat .v { font-size: 28px; font-weight: 800; margin-top: 6px; }
+    .stat .h { font-size: 12px; color: var(--sky-700); margin-top: 4px; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: end; }
+    label { display: flex; flex-direction: column; gap: 5px; font-size: 12px; font-weight: 700; color: var(--sky-800); }
+    input, select, textarea {
+      font: inherit; padding: 10px 12px; border-radius: 12px; border: 1px solid #7dd3fc;
+      background: #fff; color: var(--ink); min-width: 160px; outline: none;
+    }
+    textarea { min-width: 240px; min-height: 70px; }
+    input:focus, select:focus, textarea:focus { border-color: var(--sky-500); box-shadow: 0 0 0 3px #bae6fd; }
+    .btn {
+      border: 0; border-radius: 12px; padding: 10px 14px; font: inherit; font-weight: 700;
+      cursor: pointer; background: var(--sky-600); color: #fff;
+    }
+    .btn:hover { background: var(--sky-700); }
+    .btn.ghost { background: #fff; color: var(--sky-700); border: 1px solid #7dd3fc; }
+    .btn.ok { background: var(--ok); }
+    .btn.warn { background: #b45309; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th { text-align: left; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 10px; border-bottom: 1px solid #bae6fd; }
+    td { padding: 10px; border-bottom: 1px solid #e0f2fe; vertical-align: middle; }
+    tr:hover td { background: #f0f9ff; }
+    .chip { display: inline-flex; align-items: center; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 700; }
+    .present { background: var(--ok-bg); color: var(--ok); }
+    .absent { background: var(--no-bg); color: var(--no); }
+    .late { background: var(--late-bg); color: var(--late); }
+    .excused { background: var(--exc-bg); color: var(--exc); }
+    .roster { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+    .student {
+      border: 1px solid #bae6fd; border-radius: 16px; padding: 14px; background: #fff;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .student header { display: flex; justify-content: space-between; gap: 8px; align-items: start; }
+    .avatar {
+      width: 40px; height: 40px; border-radius: 12px; background: var(--sky-100); color: var(--sky-700);
+      display: grid; place-items: center; font-weight: 800;
+    }
+    .meta { color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .status-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .status-row button { border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; padding: 8px; font-weight: 700; cursor: pointer; font: inherit; font-size: 12px; }
+    .status-row button.on-present { background: var(--ok); color: #fff; border-color: var(--ok); }
+    .status-row button.on-absent { background: var(--no); color: #fff; border-color: var(--no); }
+    .status-row button.on-late { background: var(--late); color: #fff; border-color: var(--late); }
+    .status-row button.on-excused { background: var(--exc); color: #fff; border-color: var(--exc); }
+    .toast {
+      position: fixed; right: 18px; bottom: 18px; background: #0369a1; color: #fff;
+      padding: 12px 16px; border-radius: 12px; display: none; z-index: 20; font-weight: 600;
+    }
+    .hidden { display: none !important; }
+    .chart { display: flex; align-items: flex-end; gap: 8px; height: 220px; padding: 8px 4px 0; overflow-x: auto; }
+    .bar-wrap { min-width: 36px; flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+    .bar { width: 100%; max-width: 28px; border-radius: 8px 8px 4px 4px; display: flex; flex-direction: column; overflow: hidden; min-height: 8px; }
+    .seg-p { background: #059669; }
+    .seg-a { background: #dc2626; }
+    .seg-l { background: #d97706; }
+    .seg-e { background: #7c3aed; }
+    .bar-label { font-size: 10px; color: var(--muted); margin-top: 6px; white-space: nowrap; }
+    .legend { display: flex; gap: 12px; font-size: 12px; font-weight: 600; margin-top: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    .two { grid-template-columns: 1.4fr .8fr; }
+    .notice { background: #ecfeff; border: 1px dashed #22d3ee; border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--sky-800); }
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      aside { height: auto; position: relative; }
+      .stats, .two { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) { .stats, .two { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="logo">H</div>
+        <div>
+          <h1>Horizon Attendance</h1>
+          <p id="school-chip">Skyline Public School</p>
+        </div>
+      </div>
+      <nav>
+        <button class="active" data-view="dashboard">Dashboard</button>
+        <button data-view="roster">Student roster</button>
+        <button data-view="mark">Mark attendance</button>
+        <button data-view="history">Session history</button>
+        <button data-view="reports">Reports &amp; graph</button>
+        <button data-view="export">Export CSV</button>
+        <button data-view="settings">Campus settings</button>
+      </nav>
+      <div class="aside-foot">
+        Records stay on this browser for <strong>6 months</strong>. Older rolls are auto-archived out of the live register.
+      </div>
+    </aside>
+    <main>
+      <div class="topbar">
+        <div>
+          <h2 id="view-title">Dashboard</h2>
+          <p class="sub" id="view-sub">Today’s campus snapshot</p>
+        </div>
+        <div class="pills">
+          <span class="pill" id="pill-year">AY 2025–26</span>
+          <span class="pill" id="pill-faculty">Faculty: —</span>
+          <span class="pill" id="pill-clock">—</span>
+        </div>
+      </div>
+
+      <section id="view-dashboard">
+        <div class="grid stats" id="dash-stats"></div>
+        <div class="grid two" style="margin-top:16px">
+          <div class="card">
+            <h3>Today’s marked sessions</h3>
+            <div id="dash-sessions" style="margin-top:10px"></div>
+          </div>
+          <div class="card">
+            <h3>Retention</h3>
+            <p class="meta" id="retention-copy" style="margin-top:8px"></p>
+            <div class="notice" style="margin-top:12px">Attendance is stored locally in IndexedDB (with a backup copy in this browser). Keep using the same browser/profile to retain the 6-month register.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-roster" class="hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label>Class
+              <select id="roster-class"></select>
+            </label>
+            <label>Full name
+              <input id="st-name" placeholder="Aarav Menon" />
+            </label>
+            <label>Roll no.
+              <input id="st-roll" placeholder="08" />
+            </label>
+            <label>Admission no.
+              <input id="st-adm" placeholder="SPS/25/1042" />
+            </label>
+            <label>Gender
+              <select id="st-gender">
+                <option>Female</option>
+                <option>Male</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>House
+              <select id="st-house">
+                <option>Blue</option>
+                <option>Green</option>
+                <option>Gold</option>
+                <option>White</option>
+              </select>
+            </label>
+            <label>Guardian
+              <input id="st-guard" placeholder="Parent / guardian" />
+            </label>
+            <label>Phone
+              <input id="st-phone" placeholder="98xxxxxxxx" />
+            </label>
+            <button class="btn" id="add-student">Add student</button>
+          </div>
+          <div id="roster-list" class="roster"></div>
+        </div>
+      </section>
+
+      <section id="view-mark" class="hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label>Class <select id="mark-class"></select></label>
+            <label>Date <input type="date" id="mark-date" /></label>
+            <label>Period
+              <select id="mark-period">
+                <option value="1">P1 · 08:30–09:15 Homeroom</option>
+                <option value="2">P2 · 09:20–10:05</option>
+                <option value="3">P3 · 10:10–10:55</option>
+                <option value="4">P4 · 11:15–12:00</option>
+                <option value="5">P5 · 12:05–12:50</option>
+                <option value="6">P6 · 13:35–14:20</option>
+                <option value="7">P7 · 14:25–15:10</option>
+                <option value="8">P8 · 15:15–16:00</option>
+              </select>
+            </label>
+            <label>Subject <input id="mark-subject" placeholder="Mathematics" /></label>
+            <label>Room <input id="mark-room" placeholder="B-204" /></label>
+            <label>Notes <input id="mark-notes" placeholder="Unit test / assembly" /></label>
+            <button class="btn ghost" id="load-session">Load / start roll</button>
+            <button class="btn ok" id="save-session">Save attendance</button>
+          </div>
+          <p class="meta" id="mark-hint">Everyone starts as Present. Flip Late / Absent / Excused as you call the roll.</p>
+          <div id="mark-list" class="roster" style="margin-top:14px"></div>
+        </div>
+      </section>
+
+      <section id="view-history" class="hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label>Class <select id="hist-class"></select></label>
+            <button class="btn ghost" id="refresh-hist">Refresh</button>
+          </div>
+          <div style="overflow:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th><th>Period</th><th>Subject</th><th>Room</th>
+                  <th>Present</th><th>Late</th><th>Absent</th><th>Excused</th><th>Marked by</th>
+                </tr>
+              </thead>
+              <tbody id="hist-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-reports" class="hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label>Class <select id="rep-class"></select></label>
+            <label>From <input type="date" id="rep-from" /></label>
+            <label>To <input type="date" id="rep-to" /></label>
+            <button class="btn" id="run-report">Build graph</button>
+          </div>
+          <div class="grid stats" id="rep-stats"></div>
+          <div id="chart" class="chart"></div>
+          <div class="legend">
+            <span><i class="dot" style="background:#059669"></i>Present</span>
+            <span><i class="dot" style="background:#d97706"></i>Late</span>
+            <span><i class="dot" style="background:#dc2626"></i>Absent</span>
+            <span><i class="dot" style="background:#7c3aed"></i>Excused</span>
+          </div>
+          <h3 style="margin:18px 0 8px">Student standing (range)</h3>
+          <div style="overflow:auto">
+            <table>
+              <thead><tr><th>Student</th><th>Roll</th><th>Present</th><th>Late</th><th>Absent</th><th>Excused</th><th>%</th></tr></thead>
+              <tbody id="rep-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-export" class="hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label>Class <select id="exp-class"></select></label>
+            <label>From <input type="date" id="exp-from" /></label>
+            <label>To <input type="date" id="exp-to" /></label>
+            <button class="btn" id="do-export">Download CSV</button>
+            <button class="btn ghost" id="do-backup">Download full 6-month backup JSON</button>
+          </div>
+          <p class="meta">CSV columns: Date, Period, Subject, Room, AdmissionNo, RollNo, FullName, Gender, House, Guardian, Phone, Status, Remark, MarkedBy, SavedAt</p>
+        </div>
+      </section>
+
+      <section id="view-settings" class="hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label>Institution <input id="set-school" /></label>
+            <label>Campus <input id="set-campus" /></label>
+            <label>Academic year <input id="set-year" /></label>
+            <label>Faculty name <input id="set-faculty" /></label>
+            <label>Staff ID <input id="set-staff" /></label>
+            <label>Department <input id="set-dept" /></label>
+            <label>Retention (months) <input id="set-ret" type="number" min="6" value="6" /></label>
+            <button class="btn" id="save-settings">Save campus profile</button>
+          </div>
+          <p class="notice">Minimum retention is 6 months. The live register never drops a saved session sooner than that. After the window, stale rolls are pruned automatically when the app opens.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const RETENTION_MIN_MONTHS = 6;
+    const MS_DAY = 86400000;
+    const DB_NAME = "horizon-attendance-v1";
+    const DB_VER = 1;
+
+    const PERIODS = {
+      1: "P1 · 08:30–09:15",
+      2: "P2 · 09:20–10:05",
+      3: "P3 · 10:10–10:55",
+      4: "P4 · 11:15–12:00",
+      5: "P5 · 12:05–12:50",
+      6: "P6 · 13:35–14:20",
+      7: "P7 · 14:25–15:10",
+      8: "P8 · 15:15–16:00"
+    };
+
+    const SEED_CLASSES = [
+      { id: "c1", name: "VIII-A", grade: 8, section: "A", room: "A-101", classTeacher: "Ms. Kavitha Rao", subjectFocus: "Homeroom / Maths" },
+      { id: "c2", name: "VIII-B", grade: 8, section: "B", room: "A-102", classTeacher: "Mr. Imran Sheikh", subjectFocus: "Homeroom / Science" },
+      { id: "c3", name: "IX-A", grade: 9, section: "A", room: "B-201", classTeacher: "Ms. Priya Nair", subjectFocus: "Homeroom / English" },
+      { id: "c4", name: "X-A", grade: 10, section: "A", room: "B-204", classTeacher: "Mr. Arjun Desai", subjectFocus: "Homeroom / Computer" },
+      { id: "c5", name: "X-B", grade: 10, section: "B", room: "B-205", classTeacher: "Ms. Sana Qureshi", subjectFocus: "Homeroom / Commerce" }
+    ];
+
+    const FIRST_NAMES = ["Aarav","Ananya","Diya","Ishaan","Meera","Kabir","Zara","Rohan","Sana","Vivaan","Aditi","Neel","Myra","Arjun","Kiara","Reyansh","Aisha","Dev","Nisha","Yash"];
+    const LAST_NAMES = ["Menon","Iyer","Reddy","Khan","Sharma","Nair","Das","Patel","Fernandes","Banerjee"];
+
+    const state = {
+      settings: null,
+      classes: [],
+      students: [],
+      sessions: [],
+      records: [],
+      markMap: {},
+      markSessionKey: null
+    };
+
+    function uid(prefix) {
+      return prefix + "-" + Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-4);
+    }
+    function todayISO() { return new Date().toISOString().slice(0, 10); }
+    function monthsAgoISO(m) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - m);
+      return d.toISOString().slice(0, 10);
+    }
+    function toast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      setTimeout(() => { el.style.display = "none"; }, 2400);
+    }
+    function initials(name) {
+      return String(name).split(" ").filter(Boolean).slice(0, 2).map(p => p[0]).join("").toUpperCase();
+    }
+
+    function openDb() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VER);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          ["settings","classes","students","sessions","records"].forEach(store => {
+            if (!db.objectStoreNames.contains(store)) db.createObjectStore(store, { keyPath: "id" });
+          });
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function storeGetAll(name) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(name, "readonly");
+        const req = tx.objectStore(name).getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+    async function storePut(name, value) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(name, "readwrite");
+        tx.objectStore(name).put(value);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+    async function storePutMany(name, values) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(name, "readwrite");
+        const os = tx.objectStore(name);
+        values.forEach(v => os.put(v));
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+    async function storeDelete(name, id) {
+      const db = await openDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction(name, "readwrite");
+        tx.objectStore(name).delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    }
+
+    function defaultSettings() {
+      return {
+        id: "campus",
+        institutionName: "Skyline Public School",
+        campus: "Whitefield Campus",
+        academicYear: "2025–26",
+        facultyName: "Ms. Kavitha Rao",
+        staffId: "FAC-2048",
+        department: "Middle School",
+        retentionMonths: 6
+      };
+    }
+
+    function seedStudents() {
+      const out = [];
+      SEED_CLASSES.forEach((cls, ci) => {
+        for (let i = 0; i < 12; i++) {
+          const fn = FIRST_NAMES[(ci * 3 + i) % FIRST_NAMES.length];
+          const ln = LAST_NAMES[(ci + i) % LAST_NAMES.length];
+          const gender = i % 3 === 0 ? "Male" : i % 3 === 1 ? "Female" : "Female";
+          out.push({
+            id: uid("st"),
+            classId: cls.id,
+            fullName: fn + " " + ln,
+            rollNo: String(i + 1).padStart(2, "0"),
+            admissionNo: "SPS/25/" + String(1000 + ci * 20 + i),
+            gender,
+            house: ["Blue","Green","Gold","White"][i % 4],
+            guardianName: (gender === "Male" ? "Mr. " : "Mrs. ") + ln,
+            phone: "98" + String(70000000 + ci * 1000 + i),
+            enrolledOn: "2025-06-02"
+          });
+        }
+      });
+      return out;
+    }
+
+    function retentionCutoff() {
+      const months = Math.max(RETENTION_MIN_MONTHS, Number(state.settings?.retentionMonths || 6));
+      const d = new Date();
+      d.setMonth(d.getMonth() - months);
+      return d.getTime();
+    }
+
+    async function pruneOld() {
+      const cut = retentionCutoff();
+      const keepSessions = [];
+      for (const s of state.sessions) {
+        const t = new Date(s.date + "T00:00:00").getTime();
+        if (t >= cut) keepSessions.push(s);
+        else await storeDelete("sessions", s.id);
+      }
+      const keepIds = new Set(keepSessions.map(s => s.id));
+      const keepRecords = [];
+      for (const r of state.records) {
+        if (keepIds.has(r.sessionId)) keepRecords.push(r);
+        else await storeDelete("records", r.id);
+      }
+      state.sessions = keepSessions;
+      state.records = keepRecords;
+    }
+
+    async function loadAll() {
+      let settingsRows = await storeGetAll("settings");
+      let classes = await storeGetAll("classes");
+      let students = await storeGetAll("students");
+      state.sessions = await storeGetAll("sessions");
+      state.records = await storeGetAll("records");
+
+      if (!settingsRows.length) {
+        state.settings = defaultSettings();
+        await storePut("settings", state.settings);
+      } else {
+        state.settings = settingsRows[0];
+        if ((state.settings.retentionMonths || 0) < 6) {
+          state.settings.retentionMonths = 6;
+          await storePut("settings", state.settings);
+        }
+      }
+
+      if (!classes.length) {
+        classes = SEED_CLASSES;
+        await storePutMany("classes", classes);
+      }
+      if (!students.length) {
+        students = seedStudents();
+        await storePutMany("students", students);
+      }
+      state.classes = classes;
+      state.students = students;
+      await pruneOld();
+    }
+
+    function fillClassSelects() {
+      const html = state.classes.map(c => `<option value="${c.id}">${c.name} · ${c.room} · ${c.classTeacher}</option>`).join("");
+      ["roster-class","mark-class","hist-class","rep-class","exp-class"].forEach(id => {
+        document.getElementById(id).innerHTML = html;
+      });
+    }
+
+    function applyChrome() {
+      const s = state.settings;
+      document.getElementById("school-chip").textContent = s.institutionName;
+      document.getElementById("pill-year").textContent = "AY " + s.academicYear;
+      document.getElementById("pill-faculty").textContent = "Faculty: " + s.facultyName;
+      document.getElementById("set-school").value = s.institutionName;
+      document.getElementById("set-campus").value = s.campus;
+      document.getElementById("set-year").value = s.academicYear;
+      document.getElementById("set-faculty").value = s.facultyName;
+      document.getElementById("set-staff").value = s.staffId;
+      document.getElementById("set-dept").value = s.department;
+      document.getElementById("set-ret").value = Math.max(6, s.retentionMonths || 6);
+      document.getElementById("mark-date").value = todayISO();
+      document.getElementById("rep-to").value = todayISO();
+      document.getElementById("rep-from").value = monthsAgoISO(1);
+      document.getElementById("exp-to").value = todayISO();
+      document.getElementById("exp-from").value = monthsAgoISO(6);
+    }
+
+    function tickClock() {
+      document.getElementById("pill-clock").textContent = new Date().toLocaleString("en-IN", {
+        weekday: "short", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
+      });
+    }
+
+    function sessionCounts(sessionId) {
+      const recs = state.records.filter(r => r.sessionId === sessionId);
+      const c = { present: 0, late: 0, absent: 0, excused: 0 };
+      recs.forEach(r => { c[r.status] = (c[r.status] || 0) + 1; });
+      return c;
+    }
+
+    function renderDashboard() {
+      const today = todayISO();
+      const todaySessions = state.sessions.filter(s => s.date === today);
+      const recToday = state.records.filter(r => todaySessions.some(s => s.id === r.sessionId));
+      const present = recToday.filter(r => r.status === "present" || r.status === "late").length;
+      const absent = recToday.filter(r => r.status === "absent").length;
+      const cut = new Date(retentionCutoff());
+      document.getElementById("dash-stats").innerHTML = `
+        <div class="card stat"><div class="k">Students on roll</div><div class="v">${state.students.length}</div><div class="h">${state.classes.length} homerooms</div></div>
+        <div class="card stat"><div class="k">Sessions kept</div><div class="v">${state.sessions.length}</div><div class="h">Inside 6-month window</div></div>
+        <div class="card stat"><div class="k">In class today</div><div class="v">${present}</div><div class="h">Present + late</div></div>
+        <div class="card stat"><div class="k">Absent today</div><div class="v">${absent}</div><div class="h">${todaySessions.length} periods saved</div></div>`;
+      document.getElementById("retention-copy").textContent =
+        `Live register retains rolls from ${cut.toLocaleDateString("en-IN")} through today (${Math.max(6, state.settings.retentionMonths)} months). After that, stale sessions are removed automatically.`;
+      const rows = todaySessions.length ? todaySessions.map(s => {
+        const cls = state.classes.find(c => c.id === s.classId);
+        const c = sessionCounts(s.id);
+        return `<div style="padding:10px 0;border-bottom:1px solid #e0f2fe">
+          <strong>${cls ? cls.name : s.classId}</strong> · ${PERIODS[s.periodNo] || s.periodNo} · ${s.subject}<br>
+          <span class="meta">${c.present} present · ${c.late} late · ${c.absent} absent · ${c.excused} excused</span>
+        </div>`;
+      }).join("") : `<p class="meta">No period saved yet today. Open Mark attendance to call the roll.</p>`;
+      document.getElementById("dash-sessions").innerHTML = rows;
+    }
+
+    function renderRoster() {
+      const classId = document.getElementById("roster-class").value;
+      const list = state.students.filter(s => s.classId === classId).sort((a,b) => a.rollNo.localeCompare(b.rollNo));
+      document.getElementById("roster-list").innerHTML = list.map(s => `
+        <article class="student">
+          <header>
+            <div style="display:flex;gap:10px;align-items:center">
+              <div class="avatar">${initials(s.fullName)}</div>
+              <div>
+                <strong>${s.fullName}</strong>
+                <div class="meta">Roll ${s.rollNo} · Adm ${s.admissionNo}</div>
+              </div>
+            </div>
+            <span class="chip present">${s.house} house</span>
+          </header>
+          <div class="meta">${s.gender} · Guardian ${s.guardianName}<br>${s.phone} · Enrolled ${s.enrolledOn}</div>
+        </article>`).join("") || `<p class="meta">No students in this class yet.</p>`;
+    }
+
+    function sessionKey(classId, date, periodNo) {
+      return [classId, date, String(periodNo)].join("|");
+    }
+
+    function findSession(classId, date, periodNo) {
+      return state.sessions.find(s => s.classId === classId && s.date === date && String(s.periodNo) === String(periodNo));
+    }
+
+    function renderMarkList() {
+      const classId = document.getElementById("mark-class").value;
+      const students = state.students.filter(s => s.classId === classId).sort((a,b) => a.rollNo.localeCompare(b.rollNo));
+      document.getElementById("mark-list").innerHTML = students.map(s => {
+        const st = state.markMap[s.id] || "present";
+        return `<article class="student">
+          <header>
+            <div style="display:flex;gap:10px;align-items:center">
+              <div class="avatar">${initials(s.fullName)}</div>
+              <div><strong>${s.fullName}</strong><div class="meta">Roll ${s.rollNo} · ${s.admissionNo}</div></div>
+            </div>
+          </header>
+          <div class="status-row">
+            ${["present","late","absent","excused"].map(k =>
+              `<button data-sid="${s.id}" data-st="${k}" class="${st===k?"on-"+k:""}">${k[0].toUpperCase()+k.slice(1)}</button>`
+            ).join("")}
+          </div>
+        </article>`;
+      }).join("") || `<p class="meta">Add students to this class first.</p>`;
+    }
+
+    function loadRoll() {
+      const classId = document.getElementById("mark-class").value;
+      const date = document.getElementById("mark-date").value;
+      const periodNo = document.getElementById("mark-period").value;
+      const cls = state.classes.find(c => c.id === classId);
+      if (cls && !document.getElementById("mark-subject").value) {
+        document.getElementById("mark-subject").value = cls.subjectFocus.split(" / ").pop();
+      }
+      if (cls && !document.getElementById("mark-room").value) document.getElementById("mark-room").value = cls.room;
+      const existing = findSession(classId, date, periodNo);
+      state.markMap = {};
+      const students = state.students.filter(s => s.classId === classId);
+      students.forEach(s => { state.markMap[s.id] = "present"; });
+      if (existing) {
+        document.getElementById("mark-subject").value = existing.subject;
+        document.getElementById("mark-room").value = existing.room;
+        document.getElementById("mark-notes").value = existing.notes || "";
+        state.records.filter(r => r.sessionId === existing.id).forEach(r => { state.markMap[r.studentId] = r.status; });
+        document.getElementById("mark-hint").textContent = "Loaded saved roll for this class, date and period. Edit and save again.";
+      } else {
+        document.getElementById("mark-hint").textContent = "New roll. Everyone defaults to Present.";
+      }
+      state.markSessionKey = sessionKey(classId, date, periodNo);
+      renderMarkList();
+    }
+
+    async function saveRoll() {
+      const classId = document.getElementById("mark-class").value;
+      const date = document.getElementById("mark-date").value;
+      const periodNo = Number(document.getElementById("mark-period").value);
+      const students = state.students.filter(s => s.classId === classId);
+      if (!students.length) return toast("No students to save");
+      let session = findSession(classId, date, periodNo);
+      if (!session) {
+        session = {
+          id: uid("ss"),
+          classId, date, periodNo,
+          subject: document.getElementById("mark-subject").value || "Homeroom",
+          room: document.getElementById("mark-room").value || "",
+          notes: document.getElementById("mark-notes").value || "",
+          markedBy: state.settings.facultyName,
+          staffId: state.settings.staffId,
+          savedAt: new Date().toISOString()
+        };
+        state.sessions.push(session);
+      } else {
+        session.subject = document.getElementById("mark-subject").value || session.subject;
+        session.room = document.getElementById("mark-room").value;
+        session.notes = document.getElementById("mark-notes").value;
+        session.markedBy = state.settings.facultyName;
+        session.savedAt = new Date().toISOString();
+      }
+      await storePut("sessions", session);
+      const old = state.records.filter(r => r.sessionId === session.id);
+      for (const r of old) await storeDelete("records", r.id);
+      state.records = state.records.filter(r => r.sessionId !== session.id);
+      const fresh = students.map(s => ({
+        id: uid("rc"),
+        sessionId: session.id,
+        studentId: s.id,
+        status: state.markMap[s.id] || "present",
+        remark: "",
+        recordedAt: new Date().toISOString()
+      }));
+      state.records.push(...fresh);
+      await storePutMany("records", fresh);
+      toast("Attendance saved · kept for 6 months");
+      renderDashboard();
+    }
+
+    function renderHistory() {
+      const classId = document.getElementById("hist-class").value;
+      const rows = state.sessions.filter(s => s.classId === classId).sort((a,b) => (b.date + b.periodNo).localeCompare(a.date + a.periodNo));
+      document.getElementById("hist-body").innerHTML = rows.map(s => {
+        const c = sessionCounts(s.id);
+        return `<tr>
+          <td>${s.date}</td><td>${PERIODS[s.periodNo] || s.periodNo}</td><td>${s.subject}</td><td>${s.room || "—"}</td>
+          <td>${c.present}</td><td>${c.late}</td><td>${c.absent}</td><td>${c.excused}</td>
+          <td>${s.markedBy || "—"}</td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="9">No sessions in the 6-month window.</td></tr>`;
+    }
+
+    function inRange(date, from, to) { return date >= from && date <= to; }
+
+    function renderReport() {
+      const classId = document.getElementById("rep-class").value;
+      const from = document.getElementById("rep-from").value;
+      const to = document.getElementById("rep-to").value;
+      const sessions = state.sessions.filter(s => s.classId === classId && inRange(s.date, from, to));
+      const byDay = {};
+      sessions.forEach(s => {
+        const c = sessionCounts(s.id);
+        if (!byDay[s.date]) byDay[s.date] = { present:0, late:0, absent:0, excused:0 };
+        Object.keys(c).forEach(k => byDay[s.date][k] += c[k]);
+      });
+      const days = Object.keys(byDay).sort();
+      const totals = { present:0, late:0, absent:0, excused:0 };
+      days.forEach(d => Object.keys(totals).forEach(k => totals[k] += byDay[d][k]));
+      const denom = totals.present + totals.late + totals.absent + totals.excused;
+      const pct = denom ? Math.round(((totals.present + totals.late) / denom) * 1000) / 10 : 0;
+      document.getElementById("rep-stats").innerHTML = `
+        <div class="card stat"><div class="k">Sessions</div><div class="v">${sessions.length}</div></div>
+        <div class="card stat"><div class="k">Attendance %</div><div class="v">${pct}%</div><div class="h">Present + late</div></div>
+        <div class="card stat"><div class="k">Absences</div><div class="v">${totals.absent}</div></div>
+        <div class="card stat"><div class="k">Late marks</div><div class="v">${totals.late}</div></div>`;
+      const max = Math.max(1, ...days.map(d => Object.values(byDay[d]).reduce((a,b)=>a+b,0)));
+      document.getElementById("chart").innerHTML = days.map(d => {
+        const x = byDay[d];
+        const t = x.present+x.late+x.absent+x.excused;
+        const h = (t / max) * 180;
+        const p = n => Math.max(0, (n / t) * h);
+        return `<div class="bar-wrap"><div class="bar" style="height:${h}px">
+          <div class="seg-p" style="height:${p(x.present)}px"></div>
+          <div class="seg-l" style="height:${p(x.late)}px"></div>
+          <div class="seg-a" style="height:${p(x.absent)}px"></div>
+          <div class="seg-e" style="height:${p(x.excused)}px"></div>
+        </div><div class="bar-label">${d.slice(5)}</div></div>`;
+      }).join("") || `<p class="meta">No data in this range.</p>`;
+
+      const students = state.students.filter(s => s.classId === classId).sort((a,b)=>a.rollNo.localeCompare(b.rollNo));
+      const sidSet = new Set(sessions.map(s => s.id));
+      document.getElementById("rep-body").innerHTML = students.map(st => {
+        const recs = state.records.filter(r => sidSet.has(r.sessionId) && r.studentId === st.id);
+        const c = { present:0, late:0, absent:0, excused:0 };
+        recs.forEach(r => c[r.status]++);
+        const n = recs.length;
+        const p = n ? Math.round(((c.present + c.late) / n) * 1000) / 10 : 0;
+        return `<tr><td>${st.fullName}</td><td>${st.rollNo}</td><td>${c.present}</td><td>${c.late}</td><td>${c.absent}</td><td>${c.excused}</td><td>${p}%</td></tr>`;
+      }).join("");
+    }
+
+    function csvEscape(v) {
+      const s = String(v ?? "");
+      return /[",\n]/.test(s) ? '"' + s.replaceAll('"', '""') + '"' : s;
+    }
+
+    function download(filename, text, mime) {
+      const blob = new Blob([text], { type: mime });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function exportCsv() {
+      const classId = document.getElementById("exp-class").value;
+      const from = document.getElementById("exp-from").value;
+      const to = document.getElementById("exp-to").value;
+      const cls = state.classes.find(c => c.id === classId);
+      const sessions = state.sessions.filter(s => s.classId === classId && inRange(s.date, from, to));
+      const header = ["Date","Period","Subject","Room","Class","AdmissionNo","RollNo","FullName","Gender","House","Guardian","Phone","Status","MarkedBy","SavedAt"];
+      const lines = [header.join(",")];
+      sessions.forEach(s => {
+        state.records.filter(r => r.sessionId === s.id).forEach(r => {
+          const st = state.students.find(x => x.id === r.studentId);
+          if (!st) return;
+          lines.push([
+            s.date, PERIODS[s.periodNo] || s.periodNo, s.subject, s.room, cls?.name,
+            st.admissionNo, st.rollNo, st.fullName, st.gender, st.house, st.guardianName, st.phone,
+            r.status, s.markedBy, s.savedAt
+          ].map(csvEscape).join(","));
+        });
+      });
+      download(`attendance-${cls?.name || "class"}-${from}-to-${to}.csv`, lines.join("\n"), "text/csv");
+      toast("CSV downloaded");
+    }
+
+    function exportBackup() {
+      const payload = {
+        exportedAt: new Date().toISOString(),
+        retentionMonths: Math.max(6, state.settings.retentionMonths || 6),
+        settings: state.settings,
+        classes: state.classes,
+        students: state.students,
+        sessions: state.sessions,
+        records: state.records
+      };
+      download("horizon-attendance-backup.json", JSON.stringify(payload, null, 2), "application/json");
+      toast("Backup JSON downloaded");
+    }
+
+    const titles = {
+      dashboard: ["Dashboard", "Today’s campus snapshot"],
+      roster: ["Student roster", "Admission, roll, house and guardian details"],
+      mark: ["Mark attendance", "Call the roll by period, subject and room"],
+      history: ["Session history", "Every saved period in the 6-month window"],
+      reports: ["Reports & graph", "Present / late / absent / excused by day"],
+      export: ["Export", "CSV for office records plus a full JSON backup"],
+      settings: ["Campus settings", "School profile and retention policy"]
+    };
+
+    document.querySelectorAll("nav button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const view = btn.dataset.view;
+        ["dashboard","roster","mark","history","reports","export","settings"].forEach(v => {
+          document.getElementById("view-" + v).classList.toggle("hidden", v !== view);
+        });
+        document.getElementById("view-title").textContent = titles[view][0];
+        document.getElementById("view-sub").textContent = titles[view][1];
+        if (view === "dashboard") renderDashboard();
+        if (view === "roster") renderRoster();
+        if (view === "history") renderHistory();
+        if (view === "reports") renderReport();
+      });
+    });
+
+    document.getElementById("roster-class").addEventListener("change", renderRoster);
+    document.getElementById("hist-class").addEventListener("change", renderHistory);
+    document.getElementById("refresh-hist").addEventListener("click", renderHistory);
+    document.getElementById("run-report").addEventListener("click", renderReport);
+    document.getElementById("do-export").addEventListener("click", exportCsv);
+    document.getElementById("do-backup").addEventListener("click", exportBackup);
+    document.getElementById("load-session").addEventListener("click", loadRoll);
+    document.getElementById("save-session").addEventListener("click", saveRoll);
+    document.getElementById("mark-list").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-sid]");
+      if (!btn) return;
+      state.markMap[btn.dataset.sid] = btn.dataset.st;
+      renderMarkList();
+    });
+    document.getElementById("add-student").addEventListener("click", async () => {
+      const fullName = document.getElementById("st-name").value.trim();
+      if (!fullName) return toast("Enter a student name");
+      const student = {
+        id: uid("st"),
+        classId: document.getElementById("roster-class").value,
+        fullName,
+        rollNo: document.getElementById("st-roll").value.trim() || "00",
+        admissionNo: document.getElementById("st-adm").value.trim() || ("SPS/" + Date.now().toString().slice(-6)),
+        gender: document.getElementById("st-gender").value,
+        house: document.getElementById("st-house").value,
+        guardianName: document.getElementById("st-guard").value.trim() || "—",
+        phone: document.getElementById("st-phone").value.trim() || "—",
+        enrolledOn: todayISO()
+      };
+      state.students.push(student);
+      await storePut("students", student);
+      document.getElementById("st-name").value = "";
+      toast("Student added to roster");
+      renderRoster();
+    });
+    document.getElementById("save-settings").addEventListener("click", async () => {
+      state.settings = {
+        ...state.settings,
+        institutionName: document.getElementById("set-school").value.trim() || "Skyline Public School",
+        campus: document.getElementById("set-campus").value.trim(),
+        academicYear: document.getElementById("set-year").value.trim(),
+        facultyName: document.getElementById("set-faculty").value.trim(),
+        staffId: document.getElementById("set-staff").value.trim(),
+        department: document.getElementById("set-dept").value.trim(),
+        retentionMonths: Math.max(6, Number(document.getElementById("set-ret").value) || 6)
+      };
+      await storePut("settings", state.settings);
+      applyChrome();
+      toast("Campus profile saved");
+    });
+
+    (async function boot() {
+      try {
+        await loadAll();
+        fillClassSelects();
+        applyChrome();
+        tickClock();
+        setInterval(tickClock, 30000);
+        renderDashboard();
+        loadRoll();
+      } catch (err) {
+        console.error(err);
+        toast("Storage failed — use http://localhost:5500 (not a blocked file:// context)");
+      }
+    })();
+  </script>
+</body>
+</html>
