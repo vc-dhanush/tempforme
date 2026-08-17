@@ -1,46 +1,11 @@
-import type {
-  AttendanceData,
-  AttendanceRecord,
-  AttendanceStatus,
-  Student,
-} from "./types";
-
-const STORAGE_KEY = "attendance-system-data";
-
-const emptyData = (): AttendanceData => ({
-  students: [],
-  records: [],
-});
-
-export function loadAttendanceData(): AttendanceData {
-  if (typeof window === "undefined") {
-    return emptyData();
-  }
-
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return emptyData();
-    const parsed = JSON.parse(raw) as AttendanceData;
-    return {
-      students: parsed.students ?? [],
-      records: parsed.records ?? [],
-    };
-  } catch {
-    return emptyData();
-  }
-}
-
-export function saveAttendanceData(data: AttendanceData): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
+import type { AttendanceData, AttendanceRecord, SchoolClass, Student } from "./types";
 
 export function createId(): string {
   return crypto.randomUUID();
 }
 
-export function addStudent(data: AttendanceData, name: string): AttendanceData {
-  const student: Student = {
+export function addClass(data: AttendanceData, name: string): AttendanceData {
+  const schoolClass: SchoolClass = {
     id: createId(),
     name: name.trim(),
     createdAt: new Date().toISOString(),
@@ -48,9 +13,55 @@ export function addStudent(data: AttendanceData, name: string): AttendanceData {
 
   return {
     ...data,
-    students: [...data.students, student].sort((a, b) =>
-      a.name.localeCompare(b.name),
+    classes: [...data.classes, schoolClass].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { numeric: true }),
     ),
+  };
+}
+
+export function isRegisterNumberTaken(
+  data: AttendanceData,
+  registerNumber: string,
+  excludeStudentId?: string,
+): boolean {
+  const normalized = registerNumber.trim().toUpperCase();
+  return data.students.some(
+    (student) =>
+      student.registerNumber.toUpperCase() === normalized &&
+      student.id !== excludeStudentId,
+  );
+}
+
+export function addStudent(
+  data: AttendanceData,
+  classId: string,
+  name: string,
+  registerNumber: string,
+): { data: AttendanceData; error?: string } {
+  const trimmedName = name.trim();
+  const trimmedRegister = registerNumber.trim();
+
+  if (!trimmedName) return { data, error: "Student name is required." };
+  if (!trimmedRegister) return { data, error: "Register number is required." };
+  if (isRegisterNumberTaken(data, trimmedRegister)) {
+    return { data, error: "Register number already exists. It must be unique." };
+  }
+
+  const student: Student = {
+    id: createId(),
+    classId,
+    name: trimmedName,
+    registerNumber: trimmedRegister,
+    createdAt: new Date().toISOString(),
+  };
+
+  return {
+    data: {
+      ...data,
+      students: [...data.students, student].sort((a, b) =>
+        a.registerNumber.localeCompare(b.registerNumber, undefined, { numeric: true }),
+      ),
+    },
   };
 }
 
@@ -59,35 +70,40 @@ export function removeStudent(
   studentId: string,
 ): AttendanceData {
   return {
+    ...data,
     students: data.students.filter((student) => student.id !== studentId),
     records: data.records.filter((record) => record.studentId !== studentId),
   };
 }
 
-export function setAttendance(
+export function getStudentsForClass(
   data: AttendanceData,
+  classId: string,
+): Student[] {
+  return data.students.filter((student) => student.classId === classId);
+}
+
+export function markAbsent(
+  data: AttendanceData,
+  classId: string,
   studentId: string,
   date: string,
-  status: AttendanceStatus,
 ): AttendanceData {
   const existing = data.records.find(
-    (record) => record.studentId === studentId && record.date === date,
+    (record) =>
+      record.studentId === studentId &&
+      record.date === date &&
+      record.classId === classId,
   );
 
-  if (existing) {
-    return {
-      ...data,
-      records: data.records.map((record) =>
-        record.id === existing.id ? { ...record, status } : record,
-      ),
-    };
-  }
+  if (existing) return data;
 
   const record: AttendanceRecord = {
     id: createId(),
+    classId,
     studentId,
     date,
-    status,
+    status: "absent",
   };
 
   return {
@@ -96,12 +112,47 @@ export function setAttendance(
   };
 }
 
-export function clearAttendanceForDate(
+export function markPresent(
   data: AttendanceData,
+  classId: string,
+  studentId: string,
   date: string,
 ): AttendanceData {
   return {
     ...data,
-    records: data.records.filter((record) => record.date !== date),
+    records: data.records.filter(
+      (record) =>
+        !(
+          record.studentId === studentId &&
+          record.date === date &&
+          record.classId === classId
+        ),
+    ),
+  };
+}
+
+export function toggleAbsent(
+  data: AttendanceData,
+  classId: string,
+  studentId: string,
+  date: string,
+  isAbsent: boolean,
+): AttendanceData {
+  if (isAbsent) {
+    return markAbsent(data, classId, studentId, date);
+  }
+  return markPresent(data, classId, studentId, date);
+}
+
+export function clearAbsentForDate(
+  data: AttendanceData,
+  classId: string,
+  date: string,
+): AttendanceData {
+  return {
+    ...data,
+    records: data.records.filter(
+      (record) => !(record.classId === classId && record.date === date),
+    ),
   };
 }
