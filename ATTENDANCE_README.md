@@ -1,160 +1,115 @@
 # Attendance Maintenance System
 
-A simple web app to mark student attendance, view present/absent lists, analyze each kid with charts, and download all records as CSV.
+A simple sky-blue themed web app to manage class attendance. Everyone is **present by default** — you only mark who is **absent**.
 
 ## Features
 
-- Mark **Present** or **Absent** for each student by date
-- View **Present**, **Absent**, and **Not Marked** lists
-- **Kid Analytics** with custom date range (bar chart + attendance trend)
-- **Download CSV** with date, student name, and status
-- Data saves automatically in your browser (no database needed)
+- **Welcome screen** → guides you into the app
+- **Class selection** → pick or create a class first
+- **Add students** → name + unique register number
+- **Absent-only marking** → tap a student to mark absent (tap again to mark present)
+- **Present / Absent lists** by date
+- **Kid analytics** with date range — Bar, Line, Area, and Pie charts
+- **CSV storage** — data saved in CSV format (download & import)
 
 ---
 
 ## Requirements
 
-- **Node.js 18+** (recommended: Node.js 20 or newer)
-- **npm** (comes with Node.js)
-
-Check your version:
-
-```bash
-node -v
-npm -v
-```
+- Node.js 18+
+- npm
 
 ---
 
-## Quick Start (3 steps)
-
-### 1. Extract the zip
-
-Unzip the folder anywhere on your computer, for example:
-
-```text
-attendance-system/
-```
-
-### 2. Install dependencies
-
-Open a terminal inside the project folder and run:
+## Quick Start
 
 ```bash
 npm install
-```
-
-### 3. Run the app
-
-**Development mode** (recommended for daily use):
-
-```bash
 npm run dev
 ```
 
-Open in your browser:
-
-```text
-http://localhost:3000/attendance
-```
+Open: **http://localhost:3000/attendance**
 
 ---
 
-## Production Build (optional)
+## How to Use
 
-To build and run the optimized version:
+### Step 1 — Welcome
+Click **Get Started** on the welcome screen.
+
+### Step 2 — Select Class
+- Choose a preset class (Class 1–10) or create a custom class name
+- You can also pick a previously saved class
+
+### Step 3 — Add Students
+- Enter student **name** and **register number** (must be unique)
+- Click **Add Student** for each kid
+- Click **Continue to Attendance**
+
+### Step 4 — Mark Attendance
+- All students start as **Present**
+- Tap a student to mark them **Absent**
+- Tap again to mark them back as **Present**
+- Use **Clear All Absent** to reset everyone to present for that day
+
+### Step 5 — View Lists
+- See **Present** and **Absent** lists for any date
+
+### Step 6 — Kid Analytics
+- Select a student and date range
+- Choose chart type: **Bar**, **Line**, **Area**, or **Pie**
+- View attendance % and daily breakdown
+
+### Step 7 — CSV Data
+- **Download CSV** — backup all classes, students, and absent records
+- **Import CSV** — restore from a previous backup file
+
+---
+
+## CSV Format
+
+Data is stored in CSV format (not JSON). The downloaded file has three sections:
+
+```csv
+# CLASSES
+id,name,createdAt
+...
+
+# STUDENTS
+id,classId,name,registerNumber,createdAt
+...
+
+# ATTENDANCE
+id,classId,studentId,date,status
+...
+```
+
+Only **absent** records are stored. Present is the default.
+
+---
+
+## Production Build
 
 ```bash
 npm run build
 npm run start
 ```
 
-Then open:
-
-```text
-http://localhost:3000/attendance
-```
-
 ---
 
-## How to Use
+## Commands
 
-### Add students
-1. Go to `/attendance`
-2. Type a student name in **Add student name**
-3. Click **Add Student**
-
-### Mark attendance
-1. Open the **Mark Attendance** tab
-2. Select the date
-3. Click **Present** or **Absent** for each student
-4. Use **Mark All Present** / **Mark All Absent** for quick bulk marking
-
-### View lists
-1. Open the **Present / Absent** tab
-2. Pick a date
-3. See who is present, absent, or not marked
-
-### Kid analytics
-1. Open the **Kid Analytics** tab
-2. Select a student
-3. Choose **From** and **To** dates (or click **Last 7 days**)
-4. View counts, attendance %, and charts
-
-### Download CSV
-1. Open the **Download CSV** tab
-2. Click **Download CSV File**
-3. Open the file in Excel or Google Sheets
-
----
-
-## Data Storage
-
-- Attendance data is stored in your browser **localStorage**
-- Data stays on your computer — no server or database setup required
-- Clearing browser data for this site will remove saved attendance records
-
-**Tip:** Export CSV regularly as a backup.
-
----
-
-## Project Structure
-
-```text
-src/
-  app/attendance/          # Attendance page route
-  components/attendance/   # Main attendance UI
-  lib/attendance/          # Storage, types, CSV, analytics helpers
-```
-
----
-
-## Troubleshooting
-
-| Problem | Solution |
-|---------|----------|
-| `npm: command not found` | Install Node.js from https://nodejs.org |
-| Port 3000 already in use | Run `npm run dev -- --port 3001` and open `http://localhost:3001/attendance` |
-| Page is blank after install | Run `npm install` again, then `npm run dev` |
-| Data disappeared | Browser storage was cleared — restore from your latest CSV backup |
-
----
-
-## Commands Summary
-
-| Command | What it does |
-|---------|----------------|
-| `npm install` | Install dependencies (run once after extracting) |
+| Command | Description |
+|---------|-------------|
+| `npm install` | Install dependencies |
 | `npm run dev` | Start development server |
-| `npm run build` | Create production build |
-| `npm run start` | Run production server (after build) |
-| `npm run lint` | Check code quality |
+| `npm run build` | Build for production |
+| `npm run start` | Run production server |
 
 ---
 
-## Support
+## Tips
 
-For issues or changes, edit files in:
-
-- UI: `src/components/attendance/AttendanceApp.tsx`
-- Logic: `src/lib/attendance/`
+- Register numbers must be **unique** across all students
+- Download CSV regularly as a backup
+- Use **Import CSV** to move data to another computer
